@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haven Site Intelligence</title>
+<style>
+/* ─── Reset & Base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ─── CSS Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --navy:      #032330;
+  --blue:      #0b92eb;
+  --teal:      #33d3d4;
+  --grad:      linear-gradient(135deg, #009FFF, #33D3D4);
+  --bg:        #f4f4f4;
+  --text:      #212121;
+  --muted:     #6b7280;
+  --border:    #e5e7eb;
+  --surface:   #ffffff;
+  --green:     #16a34a;
+  --amber:     #d97706;
+  --red:       #dc2626;
+  --radius:    8px;
+  --shadow:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+
+  --blue-focus-ring:     rgba(11,146,235,0.12);
+  --blue-light-bg:       #f0f9ff;
+  --blue-light-border:   #bfdbfe;
+  --teal-light-bg:       #f0fdfe;
+  --teal-ring:           rgba(51,211,212,0.22);
+  --green-light-bg:      #f0fdf4;
+  --green-light-border:  #bbf7d0;
+  --green-dark:          #15803d;
+  --green-text:          #166534;
+  --amber-light-bg:      #fef3c7;
+  --amber-light-border:  #fde68a;
+  --amber-dark:          #b45309;
+  --amber-text:          #78350f;
+  --amber-deep:          #92400e;
+  --red-light-bg:        #fef2f2;
+  --red-light-border:    #fecaca;
+  --red-dark:            #b91c1c;
+  --red-text:            #991b1b;
+  --navy-blue-bg:        rgba(11,146,235,0.08);
+  --navy-blue-border:    rgba(11,146,235,0.2);
+  --info-blue-text:      #0369a1;
+  --info-blue-bg:        #f0f9ff;
+  --info-blue-border:    #bae6fd;
+  --table-hover-bg:      #eff6ff;
+  --table-stripe-bg:     #f9fafb;
+  --skeleton-base:       #e8eaed;
+  --skeleton-shine:      #f2f3f5;
+  --chip-hover-bg:       #e8f4fd;
+  --chip-hover-border:   #b3d9f7;
+  --chip-hover-shadow:   rgba(11,146,235,0.1);
+  --header-divider:      rgba(255,255,255,0.15);
+  --header-badge-color:  rgba(255,255,255,0.45);
+  --header-badge-border: rgba(255,255,255,0.12);
+  --placeholder-color:   #9ca3af;
+  --navy-surface-text:   rgba(255,255,255,0.5);
+  --navy-surface-skel:   rgba(255,255,255,0.15);
+  --navy-surface-skel2:  rgba(255,255,255,0.08);
+  --pill-green-border:   rgba(22,163,74,0.25);
+  --pill-green-shadow:   rgba(22,163,74,0.08);
+  --pill-amber-border:   rgba(217,119,6,0.25);
+  --pill-amber-shadow:   rgba(217,119,6,0.08);
+  --pill-red-bg:         #fee2e2;
+  --pill-red-border:     rgba(220,38,38,0.25);
+  --pill-red-shadow:     rgba(220,38,38,0.08);
+  --gauge-track:         #eef0f3;
+  --gauge-shadow:        rgba(0,0,0,0.10);
+  --back-top-bg:         rgba(0,0,0,0.2);
+  --back-top-border:     rgba(255,255,255,0.1);
+  --back-top-hover-border: rgba(255,255,255,0.2);
+  --toast-shadow:        rgba(0,0,0,0.18);
+  --toast-shadow2:       rgba(0,0,0,0.1);
+  --overlay-hover:       rgba(0,0,0,0.08);
+  --retry-border:        #fca5a5;
+  --retry-hover-border:  #f87171;
+  --permit-badge-bg:     #ecfeff;
+  --permit-badge-border: #a5f3fc;
+  --nav-shadow:          rgba(0,0,0,0.05);
+}
+
+/* ─── Fade-in animation ─────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.section-fade {
+  animation: fadeInUp 200ms ease forwards;
+}
+
+/* ─── Header ──────────────────────���─────────────────────────────────────────── */
+.app-header {
+  background: var(--navy);
+  border-bottom: 2px solid transparent;
+  border-image: var(--grad) 1;
+  padding: 0 32px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.header-logo {
+  display: flex;
+  align-items: center;
+}
+.header-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--header-divider);
+}
+.header-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--header-badge-color);
+  padding: 3px 8px;
+  border: 1px solid var(--header-badge-border);
+  border-radius: 4px;
+}
+
+/* ─── Tool Nav Bar ──────────────────────────────────────────��────────────── */
+.tool-nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 60px;
+  z-index: 99;
+  box-shadow: 0 1px 3px var(--nav-shadow);
+}
+.tool-nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tool-nav-inner::-webkit-scrollbar { display: none; }
+.tool-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  height: 40px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 150ms ease, border-color 150ms ease;
+  position: relative;
+  cursor: pointer;
+}
+.tool-nav-link:hover { color: var(--navy); }
+.tool-nav-link.active {
+  font-weight: 700;
+  color: var(--navy);
+  border-bottom: 2px solid transparent;
+  background-origin: border-box;
+}
+.tool-nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--grad);
+  border-radius: 2px 2px 0 0;
+}
+.tool-nav-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.tool-nav-link.active .tool-nav-icon { opacity: 1; }
+
+/* ─── Layout ──────────────────────────────────────────────────────────────── */
+.app-body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 24px;
+}
+
+/* ─── Search Panel ────────────────────────────────────────────────────────── */
+.search-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.search-panel-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  display: block;
+}
+.search-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.search-input {
+  flex: 1;
+  min-width: 260px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  background: var(--bg);
+  cursor: text;
+}
+.search-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-focus-ring);
+  background: var(--surface);
+}
+.search-input::placeholder { color: var(--placeholder-color); }
+.county-select {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+.county-select:focus { border-color: var(--blue); }
+.btn-analyze {
+  height: 38px;
+  padding: 0 22px;
+  background: var(--grad);
+  color: var(--surface);
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: opacity 150ms ease, transform 150ms ease;
+  white-space: nowrap;
+}
+.btn-analyze:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-analyze:active { opacity: 1; transform: translateY(0); }
+.btn-analyze:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+/* ─── County Coverage Banner ──────────────────────────────────────────────── */
+.county-coverage-banner {
+  display: none;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--info-blue-bg);
+  border: 1px solid var(--info-blue-border);
+  border-radius: 6px;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.county-coverage-banner.visible { display: flex; }
+.county-coverage-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--info-blue-text);
+  margin-right: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.county-coverage-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.coverage-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  padding: 2px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.coverage-item.live {
+  background: var(--green-light-bg);
+  border: 1px solid var(--green-light-border);
+  color: var(--green-dark);
+}
+.coverage-item.roadmap {
+  background: var(--amber-light-bg);
+  border: 1px solid var(--amber-light-border);
+  color: var(--amber-deep);
+}
+.coverage-separator {
+  color: var(--border);
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ─── Address History ────────────────────────────────────────────────────── */
+.history-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.history-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.history-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.history-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 8px 3px 11px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--navy);
+  cursor: pointer;
+  transition: background 130ms ease, border-color 130ms ease, box-shadow 130ms ease;
+  user-select: none;
+  white-space: nowrap;
+  max-width: 240px;
+}
+.history-chip:hover {
+  background: var(--chip-hover-bg);
+  border-color: var(--chip-hover-border);
+  box-shadow: 0 1px 3px var(--chip-hover-shadow);
+}
+.history-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 120ms ease, background 120ms ease;
+  font-family: inherit;
+}
+.history-chip-remove:hover {
+  color: var(--text);
+  background: var(--overlay-hover);
+}
+
+/* ─── Skeleton Loaders ──────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-shine) 50%, var(--skeleton-base) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 4px;
+  display: block;
+}
+.skeleton-line {
+  height: 13px;
+  margin-bottom: 10px;
+}
+.skeleton-line:last-child { margin-bottom: 0; }
+.skeleton-line.w-full  { width: 100%; }
+.skeleton-line.w-3-4   { width: 75%; }
+.skeleton-line.w-1-2   { width: 50%; }
+.skeleton-line.w-1-3   { width: 33%; }
+.skeleton-line.w-2-3   { width: 66%; }
+.skeleton-title {
+  height: 16px;
+  margin-bottom: 14px;
+  width: 40%;
+}
+.skeleton-block {
+  height: 20px;
+  margin-bottom: 8px;
+}
+.skeleton-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.skeleton-panel-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.skeleton-panel-body { padding: 20px; }
+.skeleton-table-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 90px 90px 70px 1fr;
+  gap: 12px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--bg);
+  align-items: center;
+}
+.skeleton-table-row:last-child { border-bottom: none; }
+
+/* ─── Loading Panel ─────────────────────────────────────────────────────── */
+.loading-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0;
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.loading-panel-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 13px; color: var(--muted); font-weight: 500; }
+.loading-steps { display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 20px; }
+.loading-step {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  transition: background 200ms, color 200ms, border-color 200ms;
+  white-space: nowrap;
+}
+.loading-step.active {
+  color: var(--blue);
+  background: var(--info-blue-bg);
+  border-color: var(--blue-light-border);
+}
+.loading-step.done {
+  color: var(--green);
+  background: var(--green-light-bg);
+  border-color: var(--green-light-border);
+}
+.loading-step.error {
+  color: var(--red);
+  background: var(--red-light-bg);
+  border-color: var(--red-light-border);
+}
+.loading-step-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ─── Results Grid ──────────────────────────────────────────────────────── */
+#results { display: none; }
+.results-top {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+  .results-top { grid-template-columns: 1fr; }
+}
+
+/* ─── Card Base ─────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.card-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 46px;
+}
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.card-data-date {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  opacity: 0.7;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  font-style: italic;
+}
+.card-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.permit-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--info-blue-text);
+  background: var(--permit-badge-bg);
+  border: 1px solid var(--permit-badge-border);
+  padding: 2px 10px;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+}
+.card-body { padding: 20px; }
+.card-body-flush { padding: 0; }
+
+/* ─── Per-Section Error Banner ──────────────────────────────────────────── */
+.section-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--red-light-bg);
+  border-top: 1px solid var(--red-light-border);
+}
+.section-error-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--red);
+}
+.section-error-body {
+  flex: 1;
+  min-width: 0;
+}
+.section-error-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--red-text);
+  margin-bottom: 2px;
+}
+.section-error-reason {
+  font-size: 12px;
+  color: var(--red-dark);
+  opacity: 0.85;
+}
+.btn-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 14px;
+  background: var(--surface);
+  color: var(--red-text);
+  border: 1px solid var(--retry-border);
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.btn-retry:hover {
+  background: var(--red-light-bg);
+  border-color: var(--retry-hover-border);
+}
+.btn-retry:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-retry svg { flex-shrink: 0; }
+
+/* ─── Full-Page Error State ─────────────────────────────────────────────── */
+.fullpage-error {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  gap: 16px;
+}
+.fullpage-error-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--red-light-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--red-light-border);
+}
+.fullpage-error-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+.fullpage-error-desc {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 380px;
+  line-height: 1.6;
+}
+.fullpage-error-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 4px;
+}
+.btn-health {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 18px;
+  background: var(--surface);
+  color: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 150ms, background 150ms;
+}
+.btn-health:hover { border-color: var(--blue); background: var(--blue-light-bg); }
+
+/* ─── Legacy error banner (global) ─────────────────────────────────────── */
+.error-banner {
+  background: var(--red-light-bg);
+  border: 1px solid var(--red-light-border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  color: var(--red-text);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+.error-icon { flex-shrink: 0; }
+
+/* ═════════���═════════════════════════════════════════════════════════════════
+   SIGNAL SCORE CARD — ANIMATED SVG GAUGE
+═══════════════════════════════════════════════════════════════════════════ */
+.score-card .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px 24px;
+  gap: 0;
+}
+
+.score-gauge-wrap {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+}
+.score-gauge-svg {
+  display: block;
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 2px 12px var(--gauge-shadow));
+  overflow: visible;
+}
+.score-gauge-track {
+  fill: none;
+  stroke: var(--gauge-track);
+  stroke-width: 11;
+}
+.score-gauge-glow {
+  fill: none;
+  stroke-width: 18;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  opacity: 0.13;
+}
+.score-gauge-fill {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+}
+.score-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  pointer-events: none;
+}
+.score-number {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+  color: var(--text);
+  transition: color 600ms cubic-bezier(0.4,0,0.2,1);
+  font-variant-numeric: tabular-nums;
+}
+.score-denom {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-top: 1px;
+}
+.score-label-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-top: 14px;
+  margin-bottom: 18px;
+  transition: background 400ms ease, color 400ms ease, border-color 400ms ease, box-shadow 400ms ease;
+}
+.score-label-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.pill-green {
+  background: var(--green-light-bg);
+  color: var(--green-dark);
+  border: 1px solid var(--pill-green-border);
+  box-shadow: 0 0 0 3px var(--pill-green-shadow);
+}
+.pill-amber {
+  background: var(--amber-light-bg);
+  color: var(--amber-dark);
+  border: 1px solid var(--pill-amber-border);
+  box-shadow: 0 0 0 3px var(--pill-amber-shadow);
+}
+.pill-red {
+  background: var(--pill-red-bg);
+  color: var(--red-dark);
+  border: 1px solid var(--pill-red-border);
+  box-shadow: 0 0 0 3px var(--pill-red-shadow);
+}
+.pill-neutral {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.score-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 16px;
+}
+.score-bullets {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.score-bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.45;
+}
+.score-bullet-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  flex-shrink: 0;
+  margin-top: 4px;
+  box-shadow: 0 0 0 2px var(--teal-ring);
+}
+.score-empty {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  font-style: italic;
+  padding: 4px 0 2px;
+}
+.score-last-updated {
+  width: 100%;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.score-last-updated-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--teal);
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+.score-last-updated-label {
+  font-weight: 600;
+  color: var(--muted);
+  opacity: 0.75;
+  text-transform: uppercase;
+  font-size: 9.5px;
+  letter-spacing: 0.8px;
+  flex-shrink: 0;
+}
+.score-data-note {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--amber-light-bg);
+  border: 1px solid var(--amber-light-border);
+  border-radius: 5px;
+  font-size: 11px;
+  color: var(--amber-deep);
+  line-height: 1.5;
+  display: none;
+}
+.score-data-note.visible { display: block; }
+
+/* ─── Property Card ─────────────────────────────────────────────────────── */
+.property-address-bar {
+  background: var(--navy);
+  padding: 16px 20px;
+  color: var(--surface);
+}
+.property-address-street {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.property-address-meta {
+  font-size: 11px;
+  color: var(--navy-surface-text);
+  margin-top: 3px;
+  letter-spacing: 0.3px;
+}
+.property-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.property-metric {
+  padding: 14px 20px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.property-metric:nth-child(even) { border-right: none; }
+.property-metric:nth-last-child(-n+2) { border-bottom: none; }
+.property-metric-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.property-metric-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+}
+.property-metric-value.value-currency {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.zoning-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--navy-blue-bg);
+  border: 1px solid var(--navy-blue-border);
+  color: var(--info-blue-text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+/* ─── Permits Table ─────────────────────────────────────────────────────── */
+.permits-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+.permits-table-wrap::-webkit-scrollbar { height: 4px; }
+.permits-table-wrap::-webkit-scrollbar-track { background: var(--bg); }
+.permits-table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 640px;
+}
+.data-table thead {
+  position: sticky;
+  top: 100px;
+  z-index: 10;
+}
+.data-table th {
+  background: var(--bg);
+  padding: 9px 14px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--bg);
+  vertical-align: middle;
+  color: var(--text);
+  white-space: nowrap;
+  transition: background 150ms ease;
+}
+.data-table tbody tr:nth-child(even) td { background: var(--table-stripe-bg); }
+.data-table tbody tr:hover td { background: var(--table-hover-bg) !important; transition: background 150ms ease; }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11.5px; }
+.cost-high { color: var(--green); font-weight: 700; }
+.cost-low  { color: var(--muted); }
+.status-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.status-active  { background: var(--green-light-bg); color: var(--green-dark); }
+.status-pending { background: var(--amber-light-bg); color: var(--amber-dark); }
+.status-closed  { background: var(--bg); color: var(--muted); }
+.desc-cell {
+  white-space: normal;
+  min-width: 180px;
+  max-width: 280px;
+  word-break: break-word;
+}
+.desc-text { display: inline; }
+.desc-toggle {
+  display: inline;
+  margin-left: 5px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+}
+.desc-toggle:hover { color: var(--info-blue-text); }
+
+/* ─── Roadmap notice ─────────────────────────────────────────────────────── */
+.roadmap-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  background: var(--amber-light-bg);
+  border-top: 1px solid var(--amber-light-border);
+}
+.roadmap-notice-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.roadmap-notice-body { flex: 1; min-width: 0; }
+.roadmap-notice-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--amber-text);
+  margin-bottom: 2px;
+}
+.roadmap-notice-desc {
+  font-size: 12px;
+  color: var(--amber-deep);
+  opacity: 0.9;
+  line-height: 1.5;
+}
+.roadmap-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--amber-deep);
+  background: var(--amber-light-bg);
+  border: 1px solid var(--amber-light-border);
+  padding: 3px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ─── Legistar Timeline ─────────────────────────────────────────────────── */
+.timeline {
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--bg);
+  position: relative;
+}
+.timeline-item:last-child { border-bottom: none; }
+.timeline-date-badge {
+  flex-shrink: 0;
+  width: 68px;
+  text-align: center;
+}
+.timeline-date-month {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+  display: block;
+}
+.timeline-date-day {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.1;
+  display: block;
+}
+.timeline-date-year {
+  font-size: 10px;
+  color: var(--muted);
+  display: block;
+}
+.timeline-content { flex: 1; min-width: 0; }
+.timeline-body-name {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 4px;
+}
+.timeline-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.45;
+}
+.timeline-connector {
+  position: absolute;
+  left: 84px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.timeline-dot {
+  position: absolute;
+  left: 80px;
+  top: 22px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--teal);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--teal);
+}
+
+/* ─── Empty State ───────────────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 24px;
+  gap: 10px;
+  text-align: center;
+}
+.empty-icon { width: 40px; height: 40px; color: var(--border); }
+.empty-title { font-size: 13px; font-weight: 600; color: var(--muted); }
+.empty-desc { font-size: 12px; color: var(--placeholder-color); max-width: 280px; line-height: 1.55; }
+
+/* ─── Action Bar ────────────────────────────────────────────────────────── */
+.action-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+.action-bar-label { font-size: 12px; color: var(--muted); }
+.action-bar-label strong { color: var(--text); font-weight: 600; }
+.action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-cta {
+  height: 36px;
+  padding: 0 20px;
+  background: var(--grad);
+  color: var(--surface);
+  border: none;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 150ms ease, transform 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.btn-cta:hover { opacity: 0.87; transform: translateY(-1px); }
+.btn-outline {
+  height: 36px;
+  padding: 0 18px;
+  background: transparent;
+  color: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-outline:hover { border-color: var(--blue); background: var(--blue-light-bg); }
+.btn-share {
+  height: 36px;
+  padding: 0 18px;
+  background: transparent;
+  color: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-share:hover { border-color: var(--teal); background: var(--teal-light-bg); }
+
+/* ─── Back to Top Button ────────────────────────────────────────────────── */
+.back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 200;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 1px solid var(--back-top-border);
+  box-shadow: 0 4px 12px var(--back-top-bg);
+  color: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 220ms ease, transform 220ms ease, background 150ms ease, border-color 150ms ease;
+  pointer-events: none;
+  font-family: inherit;
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.back-to-top:hover { background: var(--blue); border-color: var(--back-top-hover-border); }
+
+/* ─── Toast Notification ───────────────────────────────────────────────── */
+@keyframes toastSlideIn {
+  from { transform: translateX(calc(100% + 24px)); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes toastSlideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(calc(100% + 24px)); opacity: 0; }
+}
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: var(--navy);
+  border-left: 3px solid var(--teal);
+  border-radius: 6px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px var(--toast-shadow), 0 2px 6px var(--toast-shadow2);
+  min-width: 220px;
+  max-width: 320px;
+  animation: toastSlideIn 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.toast.hiding { animation: toastSlideOut 220ms ease-in forwards; }
+.toast-icon { flex-shrink: 0; color: var(--teal); display: flex; align-items: center; }
+.toast-message { font-size: 13px; font-weight: 500; color: var(--surface); line-height: 1.4; }
+
+/* ─── Section spacing ───────────────────────────���───────────────────────── */
+.section-stack { display: flex; flex-direction: column; gap: 20px; }
+
+/* ─── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .app-header { padding: 0 16px; }
+  .app-body { padding: 16px; }
+  .search-row { flex-direction: column; }
+  .search-input { min-width: unset; width: 100%; }
+  .county-select { width: 100%; }
+  .btn-analyze { width: 100%; justify-content: center; }
+  .results-top { grid-template-columns: 1fr; }
+  .property-grid { grid-template-columns: 1fr; }
+  .property-metric { border-right: none !important; }
+  .property-metric:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+  .property-metric:last-child { border-bottom: none; }
+  .header-right { display: none; }
+  .history-chip { max-width: 180px; }
+  .tool-nav-inner { padding: 0 12px; }
+  .tool-nav-link { padding: 0 13px; font-size: 12px; }
+  .skeleton-table-row { grid-template-columns: 80px 1fr 70px; }
+  .skeleton-table-row span:nth-child(n+4) { display: none; }
+  .section-error { flex-wrap: wrap; }
+  .county-coverage-banner { gap: 6px; }
+  .toast { bottom: 16px; right: 16px; left: 16px; max-width: unset; }
+  .back-to-top { bottom: 20px; right: 16px; }
+  .permits-table-wrap { border-bottom: 1px solid var(--border); }
+  .action-bar { flex-direction: column; align-items: stretch; }
+  .action-buttons { flex-direction: column; }
+  .btn-cta, .btn-outline, .btn-share { justify-content: center; }
+  .fullpage-error-actions { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── Back to Top ──────────────────────────────────────────────────────── -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12.5l5-5 5 5"/>
+  </svg>
+</button>
+
+<!-- ─── Header ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="header-left">
+    <div class="header-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" width="148" height="42" viewBox="0 0 185 52" fill="none"><g clip-path="url(#clip0_1886_369)"><path d="M72.396 43.0167C72.396 40.117 74.7167 37.6877 77.6511 37.6877C79.1222 37.6877 80.4439 38.2815 81.3564 39.2532L80.6406 39.8625C79.9011 39.1067 78.8154 38.6131 77.6511 38.6131C75.2674 38.6131 73.403 40.6414 73.403 43.0167C73.403 45.392 75.2753 47.3817 77.6511 47.3817C78.8233 47.3817 79.8853 46.9036 80.6406 46.1324L81.3564 46.7571C80.4439 47.7134 79.1222 48.3072 77.6511 48.3072C74.7246 48.3072 72.396 45.9242 72.396 43.0244V43.0167Z" fill="white"/><path d="M89.302 41.1735H90.2776V48.1221H89.302V46.68C88.7828 47.6362 87.6893 48.2995 86.4306 48.2995C84.5032 48.2995 82.8748 46.7031 82.8748 44.6362C82.8748 42.5694 84.4403 40.9884 86.4621 40.9884C87.6736 40.9884 88.7671 41.5668 89.302 42.5231V41.1658V41.1735ZM89.302 44.6748C89.302 43.0553 87.9647 41.9062 86.5329 41.9062C85.1011 41.9062 83.8345 43.1555 83.8345 44.644C83.8345 46.1324 85.046 47.3972 86.5486 47.3972C88.0512 47.3972 89.2942 46.2326 89.2942 44.6748H89.302Z" fill="white"/><path d="M99.7023 44.6594C99.7023 46.7725 98.0974 48.3072 96.1071 48.3072C94.9035 48.3072 93.81 47.7288 93.2829 46.7725V51.5077H92.3074V41.1735H93.2829V42.5463C93.8021 41.59 94.9192 40.9962 96.1071 40.9962C98.0974 40.9962 99.7023 42.5463 99.7023 44.6594ZM98.7504 44.6748C98.7504 43.1247 97.5389 41.9062 96.0363 41.9062C94.5337 41.9062 93.2907 43.0244 93.2907 44.6285C93.2907 46.2327 94.6281 47.3972 96.0363 47.3972C97.5389 47.3972 98.7504 46.2095 98.7504 44.6748Z" fill="white"/><path d="M101.401 38.6131C101.401 38.2121 101.755 37.9267 102.149 37.9267C102.574 37.9267 102.912 38.2121 102.912 38.6131C102.912 39.0141 102.581 39.2841 102.149 39.2841C101.755 39.2841 101.401 38.9987 101.401 38.6131ZM101.661 48.1221V41.1735H102.636V48.1221H101.661Z" fill="white"/><path d="M108.435 41.1735V41.991H106.806V48.1221H105.854V41.991H104.564V41.1735H105.854V38.5668H106.806V41.1735H108.435Z" fill="white"/><path d="M115.711 41.1735H116.687V48.1221H115.711V46.68C115.192 47.6362 114.099 48.2995 112.84 48.2995C110.913 48.2995 109.284 46.7031 109.284 44.6362C109.284 42.5694 110.85 40.9884 112.872 40.9884C114.083 40.9884 115.177 41.5668 115.711 42.5231V41.1658V41.1735ZM115.711 44.6748C115.711 43.0553 114.374 41.9062 112.942 41.9062C111.511 41.9062 110.244 43.1555 110.244 44.644C110.244 46.1324 111.455 47.3972 112.958 47.3972C114.461 47.3972 115.704 46.2326 115.704 44.6748H115.711Z" fill="white"/><path d="M119.141 48.1221V37.3869H120.117V48.1221H119.141Z" fill="white"/><path d="M132.846 37.865C134.985 37.865 135.835 39.4152 135.835 40.9884C135.835 42.5617 134.985 44.1118 132.798 44.1118H129.73V48.1144H128.731V37.8573H132.846V37.865ZM132.759 43.1941C134.262 43.1941 134.836 42.1067 134.836 40.9884C134.836 39.8702 134.277 38.7828 132.83 38.7828H129.73V43.1864H132.751L132.759 43.1941Z" fill="white"/><path d="M143.254 41.1735H144.229V48.1221H143.254V46.68C142.735 47.6362 141.641 48.2995 140.382 48.2995C138.455 48.2995 136.826 46.7031 136.826 44.6362C136.826 42.5694 138.392 40.9884 140.414 40.9884C141.625 40.9884 142.719 41.5668 143.254 42.5231V41.1658V41.1735ZM143.254 44.6748C143.254 43.0553 141.916 41.9062 140.485 41.9062C139.053 41.9062 137.786 43.1555 137.786 44.644C137.786 46.1324 138.998 47.3972 140.5 47.3972C142.003 47.3972 143.246 46.2326 143.246 44.6748H143.254Z" fill="white"/><path d="M150.916 41.2044L150.735 42.1144C150.373 41.9679 150.035 41.9216 149.775 41.9216C148.092 41.9216 147.573 43.7956 147.573 45.5077V48.1298H146.581V41.1812H147.573V42.8779C147.919 41.7057 148.682 41.0039 149.791 41.0039C150.184 41.0039 150.641 41.081 150.916 41.2121V41.2044Z" fill="white"/><path d="M155.644 41.1735V41.991H154.023V48.1221H153.064V41.991H151.773V41.1735H153.064V38.5668H154.023V41.1735H155.644Z" fill="white"/><path d="M163.771 44.0733V48.1221H162.795V44.1196C162.795 42.7776 161.93 41.9293 160.789 41.9293C159.648 41.9293 158.453 42.5848 158.421 44.2661V48.1221H157.446V41.1735H158.421V42.4229C158.846 41.428 160.002 40.9962 160.883 40.9962C162.598 40.9962 163.771 42.1607 163.771 44.081V44.0733Z" fill="white"/><path d="M172.503 45.045H166.398C166.563 46.5334 167.625 47.3972 169.057 47.3972C170.033 47.3972 170.89 46.9345 171.362 46.1787L172.196 46.5334C171.575 47.6517 170.355 48.3072 169.018 48.3072C167.012 48.3072 165.415 46.8342 165.415 44.6285C165.415 42.4229 167.012 40.9962 169.018 40.9962C171.024 40.9962 172.527 42.4229 172.527 44.6285C172.527 44.7597 172.511 44.9139 172.495 45.045H172.503ZM171.559 44.2275C171.425 42.7854 170.402 41.9062 169.026 41.9062C167.649 41.9062 166.611 42.7391 166.414 44.2275H171.559Z" fill="white"/><path d="M178.513 41.2044L178.332 42.1144C177.97 41.9679 177.632 41.9216 177.38 41.9216C175.697 41.9216 175.178 43.7956 175.178 45.5077V48.1298H174.194V41.1812H175.178V42.8779C175.532 41.7057 176.287 41.0039 177.396 41.0039C177.79 41.0039 178.246 41.081 178.521 41.2121L178.513 41.2044Z" fill="white"/><path d="M179.308 46.2789H180.205C180.307 46.8573 180.858 47.4512 181.888 47.4512C182.919 47.4512 183.525 46.9267 183.525 46.2326C183.525 45.6697 183.131 45.2918 182.4 45.1144L181.385 44.8753C180.386 44.6362 179.575 44.1273 179.575 42.9704C179.575 41.8136 180.567 40.9884 181.912 40.9884C183.1 40.9884 184.193 41.6285 184.233 42.8779H183.296C183.249 42.2532 182.628 41.8368 181.928 41.8368C181.109 41.8368 180.543 42.3303 180.543 42.9859C180.543 43.6414 181.117 43.9267 181.637 44.0424L182.683 44.2969C184.067 44.6208 184.492 45.446 184.492 46.2481C184.492 47.482 183.352 48.2995 181.88 48.2995C180.653 48.2995 179.418 47.5977 179.3 46.2712L179.308 46.2789Z" fill="white"/><path d="M82.5523 9.46144C79.61 9.46144 77.014 10.4794 75.181 12.3303V0.5H72.3882V29.5977H75.181V19.8188C75.181 15.1684 78.1389 12.0373 82.5523 12.0373C86.9656 12.0373 89.9236 15.1607 89.9236 19.8188V29.5977H92.7478V19.8188C92.7478 13.6183 88.6492 9.45373 82.5523 9.45373V9.46144Z" fill="white"/><path d="M106.743 9.46145C100.646 9.46145 96.5476 13.626 96.5476 19.8265C96.5476 26.027 100.646 30.1838 106.743 30.1838C109.678 30.1838 112.274 29.1812 114.115 27.3381V29.5977H116.907V19.8188C116.907 13.6183 112.824 9.45374 106.743 9.45374V9.46145ZM106.743 27.6311C102.338 27.6311 99.3718 24.4923 99.3718 19.8188C99.3718 15.1453 102.33 12.0373 106.743 12.0373C111.157 12.0373 114.115 15.1607 114.115 19.8188C114.115 24.4769 111.149 27.6311 106.743 27.6311Z" fill="white"/><path d="M128.519 26.1581L120.841 10.1787L120.778 10.0475H117.686L127.048 29.4666L127.111 29.5977H129.951L139.375 10.0475H136.283L128.519 26.1581Z" fill="white"/><path d="M150.019 9.46143C144.127 9.46143 140.02 13.7262 140.02 19.8265C140.02 25.9267 144.347 30.1838 150.774 30.1838C155.447 30.1838 159.294 27.5385 159.924 23.8984L159.971 23.6285H157.186L157.147 23.8059C156.557 26.2044 154.181 27.6388 150.774 27.6388C146.4 27.6388 143.324 25.0013 142.892 20.8907H160.341V20.081C160.341 13.4409 156.486 9.47685 150.019 9.47685V9.46143ZM142.931 18.3303C143.482 14.4434 146.188 12.045 150.051 12.045C153.064 12.045 156.761 13.1401 157.422 18.3303H142.931Z" fill="white"/><path d="M174.336 9.46143C168.255 9.46143 164.172 13.626 164.172 19.8265V29.6054H166.965V19.8265C166.965 15.1761 169.923 12.045 174.336 12.045C178.749 12.045 181.707 15.1684 181.707 19.8265V29.6054H184.5V19.8265C184.5 13.626 180.417 9.46143 174.336 9.46143Z" fill="white"/><path d="M18.4209 0.5V17.1658C16.9734 17.6054 15.5809 18.1221 14.2436 18.7468V4.59512H4.67735V26.0039C3.00956 27.9165 1.61711 30.0373 0.5 32.3355V0.5H18.4209Z" fill="url(#paint0_linear_1886_369)"/><path d="M48.9132 26.0039V4.59512H39.3391V47.4126H48.9132V44.2815C48.8581 40.518 47.859 37.0013 46.1283 33.9396C45.0426 32.0578 43.7053 30.3689 42.124 28.8959V23.5746C43.5715 24.5848 44.9089 25.7571 46.1283 27.0373C47.1274 28.1247 48.1029 29.3046 48.9132 30.554V30.5848C51.5565 34.5951 53.0905 39.3689 53.0905 44.4666V51.5H35.1696V24.4152C34.3043 24.0296 33.3366 23.7365 32.3847 23.4897C30.6304 23.027 28.7423 22.7802 26.7913 22.7802C23.8727 22.7802 21.0327 23.3509 18.413 24.4152C16.9419 24.9859 15.518 25.7262 14.2357 26.6285C8.44561 30.5308 4.66161 37.0784 4.66161 44.4666V47.4126H14.2357V30.0681C15.518 29.0039 16.9104 28.1015 18.413 27.4229V51.5077H0.5V44.4743C0.5 39.3766 2.03405 34.572 4.67735 30.5617C7.0689 26.937 10.3573 23.9062 14.2514 21.8316C15.5573 21.1221 16.9813 20.5206 18.4288 20.0347C21.0406 19.1632 23.8806 18.7005 26.8071 18.7005C28.7581 18.7005 30.5911 18.8933 32.4005 19.3021C33.3445 19.4949 34.32 19.7416 35.1854 20.0656V0.5H53.1063V32.3278C51.997 30.0373 50.5731 27.9087 48.9289 25.9961L48.9132 26.0039Z" fill="url(#paint1_linear_1886_369)"/></g><defs><linearGradient id="paint0_linear_1886_369" x1="-7.00507" y1="24.9704" x2="17.692" y2="-0.2147" gradientUnits="userSpaceOnUse"><stop stop-color="#009FFF"/><stop offset="1" stop-color="#33D3D4"/></linearGradient><linearGradient id="paint1_linear_1886_369" x1="9.13791" y1="59.9679" x2="60.4054" y2="7.67088" gradientUnits="userSpaceOnUse"><stop stop-color="#009FFF"/><stop offset="1" stop-color="#33D3D4"/></linearGradient><clipPath id="clip0_1886_369"><rect width="184" height="51" fill="white" transform="translate(0.5 0.5)"/></clipPath></defs></svg>
+    </div>
+    <div class="header-divider"></div>
+    <span class="header-subtitle">Site Intelligence</span>
+  </div>
+  <div class="header-right">
+    <span class="header-badge">Davidson</span>
+    <span class="header-badge">Montgomery</span>
+  </div>
+</header>
+
+<!-- ─── Tool Nav Bar ──────────────────────────────────────────────────────── -->
+<nav class="tool-nav" aria-label="Haven tools">
+  <div class="tool-nav-inner">
+    <a href="haven-site-intel.html" class="tool-nav-link active" aria-current="page">
+      <svg class="tool-nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v13.5M3.75 16.5h12.5M7.5 12.75V9m3.25 3.75V6.5m3.25 6.25V11"/>
+      </svg>
+      Site Intelligence
+    </a>
+    <a href="haven-deal-screener.html" class="tool-nav-link">
+      <svg class="tool-nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5a.75.75 0 01.75.75v9.5a.75.75 0 01-1.5 0v-9.5A.75.75 0 019 4.5zm4 3a.75.75 0 01.75.75v6.5a.75.75 0 01-1.5 0v-6.5A.75.75 0 0113 7.5zm-8 4a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 015 11.5z"/>
+      </svg>
+      Deal Screener
+    </a>
+    <a href="haven-credit-memo.html" class="tool-nav-link">
+      <svg class="tool-nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 2.75A2.75 2.75 0 018.75 0h2.5A2.75 2.75 0 0114 2.75V4h2.25A1.75 1.75 0 0118 5.75v11.5A1.75 1.75 0 0116.25 19H3.75A1.75 1.75 0 012 17.25V5.75A1.75 1.75 0 013.75 4H6V2.75zm2.5 0v1.5h3V2.75a1.25 1.25 0 00-1.25-1.25h-.5A1.25 1.25 0 008.5 2.75zM6 8.5h8M6 11.5h5"/>
+      </svg>
+      Credit Memo
+    </a>
+    <a href="haven-loi-generator.html" class="tool-nav-link">
+      <svg class="tool-nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 3.75h11A1.75 1.75 0 0117.25 5.5v11A1.75 1.75 0 0115.5 18.25h-11A1.75 1.75 0 012.75 16.5v-11A1.75 1.75 0 014.5 3.75zM6.5 7.5h7m-7 3h7m-7 3h4"/>
+      </svg>
+      LOI Generator
+    </a>
+    <a href="haven-dashboard.html" class="tool-nav-link">
+      <svg class="tool-nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.75 3.75h5.5v6h-5.5v-6zm0 8.5h5.5v4h-5.5v-4zm8.5-8.5h6v4h-6v-4zm0 6.5h6v6h-6v-6z"/>
+      </svg>
+      Dashboard
+    </a>
+  </div>
+</nav>
+
+<!-- ─── App Body ──────────────────────────────────────────────────────────── -->
+<main class="app-body" id="appTop">
+
+  <!-- Search Panel -->
+  <div class="search-panel">
+    <span class="search-panel-label">Property Lookup</span>
+    <div class="search-row">
+      <input
+        type="text"
+        id="addressInput"
+        class="search-input"
+        placeholder="e.g. 4012 Hillsboro Pike, Nashville TN 37215"
+        autocomplete="off"
+        aria-label="Property address"
+      />
+      <select id="countySelect" class="county-select" onchange="onCountyChange()" aria-label="Select county">
+        <option value="davidson">Davidson County (Nashville)</option>
+        <option value="montgomery">Montgomery County (Clarksville)</option>
+        <option value="dallas">Dallas County (DFW)</option>
+      </select>
+      <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
+        Run Analysis
+      </button>
+    </div>
+
+    <!-- Montgomery County Coverage Banner -->
+    <div class="county-coverage-banner" id="countyCoverageBanner">
+      <span class="county-coverage-label">Data Coverage:</span>
+      <div class="county-coverage-items">
+        <span class="coverage-item live">✅ Parcels <strong>(Live)</strong></span>
+        <span class="coverage-separator">|</span>
+        <span class="coverage-item roadmap">⏳ Permits <strong>(Roadmap)</strong></span>
+        <span class="coverage-separator">|</span>
+        <span class="coverage-item roadmap">⏳ Legistar <strong>(Roadmap)</strong></span>
+      </div>
+    </div>
+
+    <!-- Address History -->
+    <div class="history-row" id="historyRow" style="display:none;">
+      <span class="history-label">Recent:</span>
+      <div class="history-chips" id="historyChips"></div>
+    </div>
+  </div>
+
+  <!-- Full-Page Error State (all sections failed) -->
+  <div class="fullpage-error" id="fullpageError" role="alert" aria-live="assertive">
+    <div class="fullpage-error-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <circle cx="12" cy="16" r="0.5" fill="var(--red)"/>
+      </svg>
+    </div>
+    <div class="fullpage-error-title">All data sources unavailable</div>
+    <div class="fullpage-error-desc">
+      Every API endpoint failed to respond. This may be a network issue or a problem with the data worker.
+    </div>
+    <div class="fullpage-error-actions">
+      <a href="/health" class="btn-health" target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 3a7 7 0 100 14A7 7 0 0010 3zm0 3v4m0 2.5v.5"/>
+        </svg>
+        Check API Status
+      </a>
+      <button class="btn-cta" onclick="analyze()">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M16 16v-5h-5M4.5 9A7.5 7.5 0 0115.5 9M15.5 11a7.5 7.5 0 01-11 0"/>
+        </svg>
+        Retry All
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Panel -->
+  <div class="loading-panel" id="loadingPanel">
+    <div class="loading-panel-top">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="loading-text" id="loadingText">Querying county data sources&hellip;</div>
+    </div>
+    <div class="loading-steps" id="loadingSteps" role="status" aria-live="polite">
+      <span class="loading-step" id="step-parcel"><span class="loading-step-dot"></span>Parcels</span>
+      <span class="loading-step" id="step-permits"><span class="loading-step-dot"></span>Permits</span>
+      <span class="loading-step" id="step-planning"><span class="loading-step-dot"></span>Planning</span>
+      <span class="loading-step" id="step-legistar"><span class="loading-step-dot"></span>Legistar</span>
+    </div>
+  </div>
+
+  <!-- Skeleton Panels -->
+  <div id="skeletonPanels" style="display:none;" aria-hidden="true">
+    <div class="results-top" style="margin-bottom:20px;">
+      <div class="skeleton-panel">
+        <div class="skeleton-panel-header">
+          <span class="skeleton" style="height:11px;width:50%;display:block;"></span>
+        </div>
+        <div class="skeleton-panel-body" style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:28px 20px;">
+          <span class="skeleton" style="width:140px;height:140px;border-radius:50%;display:block;"></span>
+          <span class="skeleton" style="height:22px;width:40%;border-radius:20px;display:block;"></span>
+          <span style="width:100%;height:1px;display:block;background:var(--border);"></span>
+          <span class="skeleton skeleton-line w-full"></span>
+          <span class="skeleton skeleton-line w-3-4"></span>
+          <span class="skeleton skeleton-line w-full"></span>
+        </div>
+      </div>
+      <div class="skeleton-panel">
+        <div class="skeleton-panel-header">
+          <span class="skeleton" style="height:11px;width:33%;display:block;"></span>
+        </div>
+        <div style="background:var(--navy);padding:16px 20px;">
+          <span class="skeleton" style="height:16px;width:70%;display:block;background:var(--navy-surface-skel);animation:none;"></span>
+          <span class="skeleton" style="height:10px;width:40%;display:block;margin-top:6px;background:var(--navy-surface-skel2);animation:none;"></span>
+        </div>
+        <div class="skeleton-panel-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <span class="skeleton skeleton-line w-full"></span>
+            <span class="skeleton skeleton-line w-full"></span>
+            <span class="skeleton skeleton-line w-3-4"></span>
+            <span class="skeleton skeleton-line w-1-2"></span>
+            <span class="skeleton skeleton-line w-full"></span>
+            <span class="skeleton skeleton-line w-2-3"></span>
+            <span class="skeleton skeleton-line w-3-4"></span>
+            <span class="skeleton skeleton-line w-full"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="skeleton-panel" style="margin-bottom:20px;">
+      <div class="skeleton-panel-header">
+        <span class="skeleton" style="height:11px;width:25%;display:block;"></span>
+        <span class="skeleton" style="height:20px;width:48px;border-radius:10px;display:block;"></span>
+      </div>
+      <div style="padding:0;">
+        <div style="background:var(--bg);padding:9px 14px;display:grid;grid-template-columns:100px 1fr 90px 90px 70px 1fr;gap:12px;border-bottom:1px solid var(--border);">
+          <span class="skeleton" style="height:10px;"></span><span class="skeleton" style="height:10px;"></span><span class="skeleton" style="height:10px;"></span><span class="skeleton" style="height:10px;"></span><span class="skeleton" style="height:10px;"></span><span class="skeleton" style="height:10px;"></span>
+        </div>
+        <div class="skeleton-table-row"><span class="skeleton" style="height:13px;"></span><span class="skeleton w-3-4" style="height:13px;"></span><span class="skeleton w-1-2" style="height:13px;"></span><span class="skeleton" style="height:13px;"></span><span class="skeleton w-2-3" style="height:13px;"></span><span class="skeleton w-full" style="height:13px;"></span></div>
+        <div class="skeleton-table-row"><span class="skeleton" style="height:13px;"></span><span class="skeleton w-1-2" style="height:13px;"></span><span class="skeleton w-3-4" style="height:13px;"></span><span class="skeleton" style="height:13px;"></span><span class="skeleton w-1-3" style="height:13px;"></span><span class="skeleton w-2-3" style="height:13px;"></span></div>
+        <div class="skeleton-table-row"><span class="skeleton" style="height:13px;"></span><span class="skeleton w-2-3" style="height:13px;"></span><span class="skeleton w-1-2" style="height:13px;"></span><span class="skeleton" style="height:13px;"></span><span class="skeleton w-full" style="height:13px;"></span><span class="skeleton w-1-2" style="height:13px;"></span></div>
+        <div class="skeleton-table-row"><span class="skeleton" style="height:13px;"></span><span class="skeleton w-3-4" style="height:13px;"></span><span class="skeleton" style="height:13px;"></span><span class="skeleton w-1-2" style="height:13px;"></span><span class="skeleton w-2-3" style="height:13px;"></span><span class="skeleton w-full" style="height:13px;"></span></div>
+      </div>
+    </div>
+    <div class="skeleton-panel" style="margin-bottom:20px;">
+      <div class="skeleton-panel-header"><span class="skeleton" style="height:11px;width:33%;display:block;"></span></div>
+      <div class="skeleton-panel-body"><span class="skeleton skeleton-line w-full"></span><span class="skeleton skeleton-line w-3-4"></span><span class="skeleton skeleton-line w-1-2"></span></div>
+    </div>
+    <div class="skeleton-panel" style="margin-bottom:20px;">
+      <div class="skeleton-panel-header"><span class="skeleton" style="height:11px;width:40%;display:block;"></span></div>
+      <div class="skeleton-panel-body"><span class="skeleton skeleton-line w-full"></span><span class="skeleton skeleton-line w-2-3"></span><span class="skeleton skeleton-line w-3-4"></span></div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <!-- Top Row: Score + Property -->
+    <div class="results-top">
+
+      <!-- ── Signal Score Card ── -->
+      <div class="card score-card section-fade">
+        <div class="card-header">
+          <div class="card-header-left">
+            <span class="card-title">Signal Score</span>
+          </div>
+          <div class="card-header-right">
+            <span class="card-data-date" id="scoreDataDate" style="display:none;"></span>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <!-- Animated SVG gauge -->
+          <div class="score-gauge-wrap" role="img" id="scoreGaugeWrap" aria-label="Signal score gauge" aria-live="polite">
+            <svg class="score-gauge-svg" width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
+              <circle class="score-gauge-track" cx="70" cy="70" r="45"/>
+              <circle class="score-gauge-glow" id="gaugeGlow" cx="70" cy="70" r="45"/>
+              <circle class="score-gauge-fill" id="gaugeFill" cx="70" cy="70" r="45"/>
+            </svg>
+            <div class="score-center">
+              <span class="score-number" id="scoreNumber">—</span>
+              <span class="score-denom" id="scoreDenom" style="display:none;">/10</span>
+            </div>
+          </div>
+
+          <!-- Signal tier pill badge -->
+          <span class="score-label-pill pill-neutral" id="scorePill">Awaiting data</span>
+
+          <!-- Divider -->
+          <div class="score-divider"></div>
+
+          <!-- Scoring factor bullet list -->
+          <div class="score-bullets" id="scoreBullets">
+            <div class="score-empty">Run an analysis to see scoring factors.</div>
+          </div>
+
+          <!-- Last Updated timestamp -->
+          <div class="score-last-updated" id="scoreLastUpdated" style="display:none;">
+            <span class="score-last-updated-dot"></span>
+            <span class="score-last-updated-label">Updated</span>
+            <span id="scoreLastUpdatedText"></span>
+          </div>
+
+          <!-- Montgomery-specific data note -->
+          <div class="score-data-note" id="scoreDataNote">
+            ℹ️ Signal score uses parcel data only for Montgomery County. Permit and legislative signals coming soon.
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Property Overview -->
+      <div class="card section-fade" id="propertyCard">
+        <div class="card-header">
+          <div class="card-header-left">
+            <span class="card-title">Parcel Overview</span>
+          </div>
+          <div class="card-header-right">
+            <span class="card-data-date" id="parcelDataDate" style="display:none;"></span>
+          </div>
+        </div>
+        <div id="parcelData">
+          <div class="empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/>
+            </svg>
+            <span class="empty-title">No parcel data yet</span>
+            <span class="empty-desc">Enter a property address above and click <strong>Run Analysis</strong> to load county GIS data.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Permits Section -->
+    <div class="card section-fade" id="permitsCard" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="card-title" id="permitsCardTitle">Active Permits</span>
+          <span class="permit-count-badge" id="permitCountBadge" style="display:none;"></span>
+        </div>
+        <div class="card-header-right">
+          <span class="card-data-date" id="permitsDataDate" style="display:none;"></span>
+        </div>
+      </div>
+      <div class="card-body-flush" id="permitsData">
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+          </svg>
+          <span class="empty-title">No permit records</span>
+          <span class="empty-desc">Run an analysis above to check permit and application history for this address.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Planning Section -->
+    <div class="card section-fade" id="planningCard" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="card-title">Planning Activity</span>
+          <span class="card-count" id="planningCount">—</span>
+        </div>
+        <div class="card-header-right">
+          <span class="card-data-date" id="planningDataDate" style="display:none;"></span>
+        </div>
+      </div>
+      <div class="card-body-flush" id="planningData">
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/>
+          </svg>
+          <span class="empty-title">No planning cases</span>
+          <span class="empty-desc">Run an analysis above to check active planning, zoning, and variance cases.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legistar Section -->
+    <div class="card section-fade" id="legistarCard" style="margin-bottom: 20px; display: none;">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="card-title">Legislative Activity</span>
+          <span class="card-count" id="legistarCount">—</span>
+        </div>
+        <div class="card-header-right">
+          <span class="card-data-date" id="legistarDataDate" style="display:none;"></span>
+        </div>
+      </div>
+      <div id="legistarData">
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/>
+          </svg>
+          <span class="empty-title">No legislative records</span>
+          <span class="empty-desc">Run an analysis above to search Metro Council and committee records for this address.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar section-fade">
+      <div class="action-bar-label">
+        Analysis complete &mdash; <strong id="actionAddress">—</strong>
+      </div>
+      <div class="action-buttons">
+        <button class="btn-share" id="shareBtn" onclick="shareBrief()" title="Copy shareable link to clipboard">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <circle cx="15" cy="5" r="2"/><circle cx="5" cy="10" r="2"/><circle cx="15" cy="15" r="2"/>
+            <path stroke-linecap="round" d="M7 9l6-3M7 11l6 3"/>
+          </svg>
+          Share Brief
+        </button>
+        <button class="btn-outline" onclick="window.open('haven-deal-screener.html')">Open Deal Screener</button>
+        <button class="btn-cta" onclick="autofillDealScreener()">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/></svg>
+          Auto-fill Deal Screener
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /results -->
+
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONSTANTS & STATE
+═══════════════════════════════════════════════════════════════════════════ */
+const BASE = 'https://haven-intel.druvasta.workers.dev';
+const HISTORY_KEY = 'haven_address_history';
+const HISTORY_MAX = 5;
+const FETCH_TIMEOUT = 10000;
+const GAUGE_CIRCUMFERENCE = 283; // 2 * π * 45  (r=45)
+const DESC_MAX_LENGTH = 80;
+
+let lastData = {};
+let lastAddress = '';
+let lastCounty = '';
+let toastTimer = null;
+
+let _lastAnalysisAddress = '';
+let _lastAnalysisCounty = '';
+
+// Track which sections errored for the full-page error check
+let _sectionErrors = { parcel: false, permits: false, planning: false, legistar: false };
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESCRIPTION TRUNCATION HELPER
+═══════════════════════════════════════════════════════════════════════════ */
+/**
+ * Returns HTML for a description cell that truncates at DESC_MAX_LENGTH chars
+ * with an expand/collapse toggle button.
+ */
+function descCellHtml(rawDesc) {
+  if (!rawDesc) return '<span class="desc-text">—</span>';
+  const full = String(rawDesc);
+  if (full.length <= DESC_MAX_LENGTH) {
+    return `<span class="desc-text">${escapeHtml(full)}</span>`;
+  }
+  const truncated = escapeHtml(full.slice(0, DESC_MAX_LENGTH)) + '…';
+  const fullEscaped = escapeHtml(full);
+  // Use data-* attributes so we never embed unescaped content in onclick
+  return `<span class="desc-text desc-truncated">${truncated}</span><button class="desc-toggle" data-full="${fullEscaped}" data-short="${truncated}" onclick="toggleDesc(this)">expand</button>`;
+}
+
+function toggleDesc(btn) {
+  const span = btn.previousElementSibling;
+  if (!span) return;
+  const isTruncated = btn.textContent.trim() === 'expand';
+  if (isTruncated) {
+    span.textContent = btn.getAttribute('data-full');
+    btn.textContent = 'collapse';
+  } else {
+    span.innerHTML = btn.getAttribute('data-short');
+    btn.textContent = 'expand';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONSTRUCTION COST FORMATTING HELPER
+═══════════════════════════════════════════════════════════════════════════ */
+/**
+ * Returns HTML for the construction cost cell.
+ * Values >= $100,000 get green bold styling.
+ */
+function costCellHtml(rawValue) {
+  if (rawValue === null || rawValue === undefined || rawValue === '') {
+    return '<span class="cost-low">—</span>';
+  }
+  // Parse numeric value — handle strings like "$150,000" or 150000
+  const numeric = typeof rawValue === 'number'
+    ? rawValue
+    : parseFloat(String(rawValue).replace(/[$,]/g, ''));
+
+  if (isNaN(numeric)) {
+    return `<span class="cost-low">${escapeHtml(String(rawValue))}</span>`;
+  }
+
+  const formatted = '$' + numeric.toLocaleString('en-US');
+  if (numeric >= 100000) {
+    return `<span class="cost-high">${formatted}</span>`;
+  }
+  return `<span class="cost-low">${formatted}</span>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PERMIT COUNT BADGE HELPER
+═══════════════════════════════════════════════════════════════════════════ */
+function updatePermitCountBadge(count) {
+  const badge = document.getElementById('permitCountBadge');
+  const title = document.getElementById('permitsCardTitle');
+  if (!badge) return;
+  if (count > 0) {
+    badge.textContent = count + ' permit' + (count === 1 ? '' : 's');
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+/* ��══════════════════════════════════════════════════════════════════════════
+   GAUGE ANIMATION
+═══════════════════════════════════════════════════════════════════════════ */
+function animateGauge(score) {
+  const fillEl   = document.getElementById('gaugeFill');
+  const glowEl   = document.getElementById('gaugeGlow');
+  const numEl    = document.getElementById('scoreNumber');
+  const denomEl  = document.getElementById('scoreDenom');
+  const pillEl   = document.getElementById('scorePill');
+
+  if (!fillEl || !glowEl || !numEl || !pillEl) return;
+
+  let colour, pillClass, pillLabel;
+
+  if (score === null || score === undefined || isNaN(score)) {
+    fillEl.style.stroke = '#e5e7eb';
+    glowEl.style.stroke = '#e5e7eb';
+    fillEl.style.strokeDashoffset = GAUGE_CIRCUMFERENCE;
+    glowEl.style.strokeDashoffset = GAUGE_CIRCUMFERENCE;
+    numEl.textContent = '—';
+    numEl.style.color = 'var(--text)';
+    denomEl.style.display = 'none';
+    pillEl.className = 'score-label-pill pill-neutral';
+    pillEl.textContent = 'Awaiting data';
+    return;
+  }
+
+  const s = Math.max(0, Math.min(10, score));
+
+  if (s >= 7) {
+    colour    = '#16a34a';
+    pillClass = 'score-label-pill pill-green';
+    pillLabel = 'High Signal';
+  } else if (s >= 4) {
+    colour    = '#d97706';
+    pillClass = 'score-label-pill pill-amber';
+    pillLabel = 'Moderate';
+  } else {
+    colour    = '#dc2626';
+    pillClass = 'score-label-pill pill-red';
+    pillLabel = 'Low Signal';
+  }
+
+  const targetOffset = GAUGE_CIRCUMFERENCE - (s / 10) * GAUGE_CIRCUMFERENCE;
+
+  fillEl.style.stroke = colour;
+  glowEl.style.stroke = colour;
+
+  const animOpts = {
+    duration: 800,
+    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    fill: 'forwards'
+  };
+
+  fillEl.animate(
+    [{ strokeDashoffset: GAUGE_CIRCUMFERENCE }, { strokeDashoffset: targetOffset }],
+    animOpts
+  ).onfinish = () => { fillEl.style.strokeDashoffset = targetOffset; };
+
+  glowEl.animate(
+    [{ strokeDashoffset: GAUGE_CIRCUMFERENCE }, { strokeDashoffset: targetOffset }],
+    animOpts
+  ).onfinish = () => { glowEl.style.strokeDashoffset = targetOffset; };
+
+  const startTime = performance.now();
+  const duration  = 800;
+  const endVal    = s;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function countUp(now) {
+    const elapsed  = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current  = endVal * easeOut(progress);
+    numEl.textContent = (Number.isInteger(endVal) ? Math.round(current) : current.toFixed(1)).toString();
+    if (progress < 1) requestAnimationFrame(countUp);
+    else numEl.textContent = Number.isInteger(endVal) ? endVal : endVal.toFixed(1);
+  }
+  requestAnimationFrame(countUp);
+
+  numEl.style.color = colour;
+  denomEl.style.display = '';
+  pillEl.className = pillClass;
+  pillEl.textContent = pillLabel;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BACK TO TOP
+═══════════════════════════════════════════════════════════════════════════ */
+(function() {
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ENTER KEY SUPPORT
+═════════════════════════��═════════════════════════════════════════════════ */
+document.getElementById('addressInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') analyze();
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════════════════════ */
+function showToast(message) {
+  const existing = document.getElementById('havenToast');
+  if (existing) { clearTimeout(toastTimer); existing.remove(); }
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.id = 'havenToast';
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
+  toast.innerHTML = `
+    <span class="toast-icon">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </span>
+    <span class="toast-message">${escapeHtml(message)}</span>
+  `;
+  document.body.appendChild(toast);
+  toastTimer = setTimeout(() => {
+    toast.classList.add('hiding');
+    setTimeout(() => toast.remove(), 220);
+  }, 2500);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHARE BRIEF
+═══════════════════════════════════════════════════════════════════════════ */
+function shareBrief() {
+  if (!lastAddress || !lastCounty) return;
+  const url = new URL(window.location.href);
+  url.search = '';
+  url.searchParams.set('address', lastAddress);
+  url.searchParams.set('county', lastCounty);
+  const shareUrl = url.toString();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => showToast('Link copied to clipboard'))
+      .catch(() => fallbackCopy(shareUrl));
+  } else {
+    fallbackCopy(shareUrl);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); showToast('Link copied to clipboard'); }
+  catch(e) { showToast('Copy failed — please copy the URL manually'); }
+  document.body.removeChild(ta);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   URL PARAM AUTO-RUN
+═══════════════════════════════════════════════════════════════════════════ */
+function checkUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const address = params.get('address');
+  const county  = params.get('county');
+  if (address) {
+    document.getElementById('addressInput').value = address;
+    if (county) {
+      const select = document.getElementById('countySelect');
+      if (Array.from(select.options).some(o => o.value === county)) {
+        select.value = county;
+        onCountyChange();
+      }
+    }
+    analyze();
+  }
+}
+
+/* ════════════════════════════════════��══════════════════════════════════════
+   COUNTY SELECTOR
+═══════════════════════════════════════════════════════════════════════════ */
+function onCountyChange() {
+  const county = document.getElementById('countySelect').value;
+  document.getElementById('countyCoverageBanner').classList.toggle('visible', county === 'montgomery');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADDRESS HISTORY
+═══════════════════════════════════════════════════════════════════════════ */
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveHistory(h) {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); } catch(e) {}
+}
+
+function addToHistory(address) {
+  if (!address || !address.trim()) return;
+  const trimmed = address.trim();
+  let h = getHistory().filter(a => a.toLowerCase() !== trimmed.toLowerCase());
+  h.unshift(trimmed);
+  saveHistory(h.slice(0, HISTORY_MAX));
+  renderHistory();
+}
+
+function removeFromHistory(address) {
+  saveHistory(getHistory().filter(a => a !== address));
+  renderHistory();
+}
+
+function renderHistory() {
+  const history = getHistory();
+  const row = document.getElementById('historyRow');
+  const chips = document.getElementById('historyChips');
+  if (!history.length) {
+    row.style.display = 'none';
+    return;
+  }
+  row.style.display = 'flex';
+  chips.innerHTML = history.map(addr => {
+    const safe = escapeHtml(addr);
+    return `<span class="history-chip" data-addr="${safe}" title="${safe}" tabindex="0" role="button" aria-label="Search ${safe}">` +
+      `<span class="history-chip-text">${safe}</span>` +
+      `<button class="history-chip-remove" data-addr="${safe}" title="Remove" aria-label="Remove ${safe}">&times;</button>` +
+      `</span>`;
+  }).join('');
+
+  chips.querySelectorAll('.history-chip').forEach(chip => {
+    chip.addEventListener('click', function(e) {
+      if (e.target.classList.contains('history-chip-remove')) return;
+      selectHistory(this.getAttribute('data-addr'));
+    });
+    chip.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectHistory(this.getAttribute('data-addr'));
+      }
+    });
+  });
+  chips.querySelectorAll('.history-chip-remove').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      removeFromHistory(this.getAttribute('data-addr'));
+    });
+  });
+}
+
+function selectHistory(address) {
+  document.getElementById('addressInput').value = address;
+  analyze();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FETCH WITH TIMEOUT
+═══════════════════════════════════════════════════════════════════════════ */
+async function fetchWithTimeout(url, ms) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+    return res;
+  } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      const e = new Error('Request timed out after 10 seconds');
+      e.code = 'TIMEOUT';
+      throw e;
+    }
+    throw err;
+  }
+}
+
+async function safeFetch(url) {
+  try {
+    const res = await fetchWithTimeout(url, FETCH_TIMEOUT);
+    if (!res.ok) {
+      const e = new Error(`Server returned ${res.status} ${res.statusText}`);
+      e.code = 'HTTP_ERROR';
+      e.status = res.status;
+      throw e;
+    }
+    return { data: await res.json(), error: null };
+  } catch (err) {
+    return { data: null, error: friendlyError(err) };
+  }
+}
+
+function friendlyError(err) {
+  if (!err) return 'Unknown error';
+  if (err.code === 'TIMEOUT') return 'Request timed out after 10 seconds';
+  if (err.code === 'HTTP_ERROR') {
+    if (err.status === 404) return 'Endpoint not found (404)';
+    if (err.status === 429) return 'Rate limit exceeded — try again shortly';
+    if (err.status >= 500) return `Server error (${err.status})`;
+    return `HTTP error ${err.status}`;
+  }
+  if (err.message && err.message.includes('Failed to fetch')) return 'Network error — check your connection';
+  return err.message || 'Unknown error';
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECTION ERROR HTML
+═══════════════════════════════════════════════════════════════════════════ */
+function sectionErrorHtml(sectionLabel, reason, retryFnName) {
+  return `
+    <div class="section-error" role="alert">
+      <svg class="section-error-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-9.25a.75.75 0 011.5 0v3.5a.75.75 0 01-1.5 0v-3.5zm.75 6a1 1 0 100-2 1 1 0 000 2z" fill="var(--red)"/>
+      </svg>
+      <div class="section-error-body">
+        <div class="section-error-title">Data unavailable — ${escapeHtml(sectionLabel)}</div>
+        <div class="section-error-reason">${escapeHtml(reason)}</div>
+      </div>
+      <button class="btn-retry" onclick="${retryFnName}(this)" aria-label="Retry ${escapeHtml(sectionLabel)}">
+        <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M16 16v-5h-5M4.5 9A7.5 7.5 0 0115.5 9M15.5 11a7.5 7.5 0 01-11 0"/>
+        </svg>
+        Retry
+      </button>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROADMAP NOTICE HTML
+═══════════════════════════════════════════════════════════════════════════ */
+function roadmapNoticeHtml(dataType) {
+  return `
+    <div class="roadmap-notice">
+      <div class="roadmap-notice-icon" aria-hidden="true">⏳</div>
+      <div class="roadmap-notice-body">
+        <div class="roadmap-notice-title">${escapeHtml(dataType)} integration coming soon</div>
+        <div class="roadmap-notice-desc">
+          This data source is on the roadmap for this county. Parcel data is live and available now.
+        </div>
+      </div>
+      <span class="roadmap-badge">Roadmap</span>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RETRY BUTTON HELPER
+═══════════════════════════════════════════════════════════════════════════ */
+function setRetryBtnLoading(btn, loading) {
+  if (!btn) return;
+  btn.disabled = loading;
+  const retryIcon = `<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M16 16v-5h-5M4.5 9A7.5 7.5 0 0115.5 9M15.5 11a7.5 7.5 0 01-11 0"/></svg>`;
+  const spinIcon = `<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 0.6s linear infinite" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M16 16v-5h-5M4.5 9A7.5 7.5 0 0115.5 9M15.5 11a7.5 7.5 0 01-11 0"/></svg>`;
+  btn.innerHTML = loading ? `${spinIcon} Retrying…` : `${retryIcon} Retry`;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RETRY FUNCTIONS (per section)
+═══════════════════════════════════════════════════════════════════════════ */
+async function retryParcel(btn) {
+  if (!_lastAnalysisAddress || !_lastAnalysisCounty) return;
+  setRetryBtnLoading(btn, true);
+  setStep('parcel', 'active');
+  const enc = encodeURIComponent(_
