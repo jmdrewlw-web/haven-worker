@@ -55,5 +55,15 @@ curl https://haven-intel.<your-subdomain>.workers.dev/api/site-brief?address=401
 |----------|--------|-------------|
 | `/api/site-brief` | `address`, `county` | **All sources in one call, scored 1–10** |
 
+## Frontend Tool
+
+`tools/haven-site-intel-live.html` is a standalone HTML file — open it in any browser to use the UI.
+
+After deploying your own worker, update the `BASE` constant near the top of the script block to point to your worker URL:
+
+```js
+const BASE = 'https://your-worker.your-subdomain.workers.dev';
+```
+
 ## Cost
 **$0/month** on Cloudflare free tier (100K requests/day)
